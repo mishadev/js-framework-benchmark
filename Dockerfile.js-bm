@@ -1,0 +1,185 @@
+FROM node:6.4.0
+
+#===================
+# Timezone settings
+# Possible alternative: https://github.com/docker/docker/issues/3359#issuecomment-32150214
+#===================
+ENV TZ "US/Pacific"
+RUN echo "${TZ}" > /etc/timezone \
+  && dpkg-reconfigure --frontend noninteractive tzdata
+
+#============================
+# Some configuration options
+#============================
+ENV SCREEN_WIDTH 1920
+ENV SCREEN_HEIGHT 1080
+ENV SCREEN_DEPTH 24
+ENV DISPLAY :99.0
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    DEBCONF_NONINTERACTIVE_SEEN=true
+
+USER seluser
+# Following line fixes
+# https://github.com/SeleniumHQ/docker-selenium/issues/87
+ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
+
+USER root
+
+# http://askubuntu.com/a/235911/134645
+# Remove with: sudo apt-key del 40976EAF437D05B5
+RUN  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 2EA8F35793D8809A \
+  && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5 \
+  && apt-key update -qqy
+
+RUN apt-get update -qqy \
+  && apt-get -qqy install \
+    htop \
+    sudo \
+    telnet \
+    bc \
+    vim \
+    git \
+    wget \
+    bzip2 \
+    curl \
+    unzip \
+  && rm -rf /var/lib/apt/lists/*
+
+#=========================
+# Fonts & video libraries
+#=========================
+# and gstreamer for mp4 & html5 support
+RUN apt-get update -qqy \
+  && apt-get -qqy install \
+    fonts-ipafont-gothic \
+    xfonts-100dpi \
+    xfonts-75dpi \
+    xfonts-cyrillic \
+    xfonts-scalable \
+    libfreetype6 \
+    libfontconfig \
+    gstreamer1.0-libav \
+  && rm -rf /var/lib/apt/lists/*
+
+#===================
+# VNC, Xvfb, Xdummy
+#===================
+RUN apt-get update -qqy \
+  && apt-get -qqy install \
+  x11vnc \
+  pyvnc2swf \
+  xvfb \
+  xorg \
+  xserver-xorg-video-dummy \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV RUN_DIR /var/run/sele
+
+#==================
+# phantomjs webdriver
+#==================
+#ENV PHANTOMJS_VERSION 2.1.1
+#ENV PHANTOMJS_DRIVER_FILE "phantomjs-${PHANTOMJS_VERSION}-linux-x86_64.tar.bz2" #ENV PHANTOMJS_DRIVER_URL "https://bitbucket.org/ariya/phantomjs/downloads/${PHANTOMJS_DRIVER_FILE}"
+#RUN cd /tmp \
+#  && mkdir -p /srv/var \
+#  && wget -nv --no-check-certificate -O ${PHANTOMJS_DRIVER_FILE} ${PHANTOMJS_DRIVER_URL} \
+#  && tar -xjf ${PHANTOMJS_DRIVER_FILE} -C /tmp \
+#  && rm -f ${PHANTOMJS_DRIVER_FILE} \
+#  && mv phantomjs-$PHANTOMJS_VERSION-linux-x86_64/ /srv/var/phantomjs \
+#  && ln -s /srv/var/phantomjs/bin/phantomjs /usr/bin/phantomjs \
+#  && git clone https://github.com/n1k0/casperjs.git /srv/var/casperjs \
+#  && ln -s /srv/var/casperjs/bin/casperjs /usr/bin/casperjs
+
+#==================
+# Chrome webdriver
+#==================
+ENV CHROME_DRIVER_FILE "chromedriver_linux64.zip"
+ENV CHROME_DRIVER_BASE "chromedriver.storage.googleapis.com"
+RUN cd /tmp \
+# && CHROME_DRIVER_VERSION="2.23" \
+  && CHROME_DRIVER_VERSION=$(curl 'https://chromedriver.storage.googleapis.com/LATEST_RELEASE' 2> /dev/null) \
+  && CHROME_DRIVER_URL="https://${CHROME_DRIVER_BASE}/${CHROME_DRIVER_VERSION}/${CHROME_DRIVER_FILE}" \
+  && wget -nv -O ${CHROME_DRIVER_FILE} ${CHROME_DRIVER_URL} \
+  && unzip -p ${CHROME_DRIVER_FILE} chromedriver > /usr/bin/chromedriver \
+  && rm ${CHROME_DRIVER_FILE} \
+  && chmod 755 /usr/bin/chromedriver
+
+RUN apt-get update -qqy && apt-get -qqy install gdebi
+#========================
+# Google Chrome download
+#========================
+ENV CHROME_DEB_FILE "google-chrome-stable_current_amd64.deb"
+ENV CHROME_URL "https://dl.google.com/linux/direct/${CHROME_DEB_FILE}"
+RUN cd /tmp \
+  && export latest_chrome_version_trigger="52.0.2743.116" \
+  && export GREP_ONLY_NUMS_VER="[0-9.]{2,20}" \
+  && wget -nv -O ${CHROME_DEB_FILE} ${CHROME_URL} \
+  && gdebi --non-interactive ${CHROME_DEB_FILE} \
+  && rm ${CHROME_DEB_FILE}
+
+#====================
+# Java 8
+#=====================
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		bzip2 \
+		unzip \
+		xz-utils \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Default to UTF-8 file.encoding
+ENV LANG C.UTF-8
+
+# add a simple script that can auto-detect the appropriate JAVA_HOME value
+# based on whether the JDK or only the JRE is installed
+RUN { \
+		echo '#!/bin/sh'; \
+		echo 'set -e'; \
+		echo; \
+		echo 'dirname "$(dirname "$(readlink -f "$(which javac || which java)")")"'; \
+	} > /usr/local/bin/docker-java-home \
+	&& chmod +x /usr/local/bin/docker-java-home
+
+ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
+
+ENV JAVA_VERSION 7u111
+ENV JAVA_DEBIAN_VERSION 7u111-2.6.7-2~deb8u1
+
+RUN set -x \
+	&& apt-get update \
+	&& apt-get install -y \
+		openjdk-7-jdk="$JAVA_DEBIAN_VERSION" \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& [ "$JAVA_HOME" = "$(docker-java-home)" ]
+
+#==============================
+# clonning form github
+#==============================
+
+RUN mkdir /src
+RUN git clone https://github.com/mishadev/js-framework-benchmark.git /src/js-framework-benchmark
+
+#==============================
+# Scripts to run Selenium
+#==============================
+WORKDIR /src
+ADD ./package.json /src/package.json
+RUN npm install
+
+WORKDIR /src/js-framework-benchmark
+RUN npm run postinstall && npm run build
+
+ADD ./graphical-session/xvfb /etc/init.d/xvfb
+RUN chmod 755 /etc/init.d/xvfb
+
+ADD ./graphical-session/start-graphical-session /usr/bin/start-graphical-session
+RUN chmod 755 /usr/bin/start-graphical-session
+
+ADD ./graphical-session/chrome_launcher.sh /opt/google/chrome/google-chrome
+RUN chmod 755 /opt/google/chrome/google-chrome
+
+ADD ./entrypoint.sh /opt/bin/entrypoint.sh
+RUN chmod 755 /opt/bin/entrypoint.sh
+
+
+ENTRYPOINT ["/opt/bin/entrypoint.sh"]
