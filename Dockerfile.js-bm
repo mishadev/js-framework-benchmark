@@ -129,7 +129,7 @@ RUN set -x \
 # clonning form github
 #==============================
 
-RUN mkdir -p /src/js-framework-benchmark
+RUN mkdir /src
 WORKDIR /src
 
 RUN git clone https://github.com/mishadev/js-framework-benchmark.git /src/js-framework-benchmark
