@@ -11,9 +11,11 @@ docker rmi -f $IMAGE_NAME
 echo =============================================================
 echo build image $IMAGE_NAME form file ${DIR}/${DOCKERFILE}
 echo =============================================================
-docker build -t $IMAGE_NAME --file="${DOCKERFILE}" $DIR
 if [[ ${1} != dev ]]; then
   echo "pushing to docker hub"
+  docker build -t --rm --no-cache $IMAGE_NAME --file="${DOCKERFILE}" $DIR
   docker push $IMAGE_NAME
+else
+  docker build -t $IMAGE_NAME --file="${DOCKERFILE}" $DIR
 fi
 
