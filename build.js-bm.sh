@@ -13,7 +13,7 @@ echo build image $IMAGE_NAME form file ${DIR}/${DOCKERFILE}
 echo =============================================================
 docker build -t $IMAGE_NAME --file="${DOCKERFILE}" $DIR
 if [[ ${1} != dev ]]; then
-  echo "nothing happend"
-  #docker push $IMAGE_NAME
+  echo "pushing to docker hub"
+  docker push $IMAGE_NAME
 fi
 
