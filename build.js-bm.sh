@@ -16,6 +16,6 @@ if [[ ${1} != dev ]]; then
   docker build -t $IMAGE_NAME --rm --no-cache --file="${DOCKERFILE}" $DIR
   docker push $IMAGE_NAME
 else
-  docker build -t $IMAGE_NAME --no-cache --file="${DOCKERFILE}" $DIR
+  docker build -t $IMAGE_NAME --rm --no-cache --file="${DOCKERFILE}" $DIR
 fi
 
