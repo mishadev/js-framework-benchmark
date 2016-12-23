@@ -13,9 +13,9 @@ echo build image $IMAGE_NAME form file ${DIR}/${DOCKERFILE}
 echo =============================================================
 if [[ ${1} != dev ]]; then
   echo "pushing to docker hub"
-  docker build -t --rm --no-cache $IMAGE_NAME --file="${DOCKERFILE}" $DIR
+  docker build -t $IMAGE_NAME --rm --no-cache --file="${DOCKERFILE}" $DIR
   docker push $IMAGE_NAME
 else
-  docker build -t $IMAGE_NAME --file="${DOCKERFILE}" $DIR
+  docker build -t $IMAGE_NAME --no-cache --file="${DOCKERFILE}" $DIR
 fi
 
