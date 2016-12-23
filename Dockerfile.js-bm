@@ -156,13 +156,14 @@ RUN set -x \
 # clonning form github
 #==============================
 
-RUN mkdir /src
+RUN mkdir -p /src/js-framework-benchmark
+WORKDIR /src
+
 RUN git clone https://github.com/mishadev/js-framework-benchmark.git /src/js-framework-benchmark
 
 #==============================
 # Scripts to run Selenium
 #==============================
-WORKDIR /src
 ADD ./package.json /src/package.json
 RUN npm install
 
