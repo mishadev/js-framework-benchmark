@@ -4,7 +4,7 @@
   "description": "Simple Benchmark for Javascript client side rendering",
   "scripts": {
     "postinstall": "mvn package",
-    "selenium": "mvn package exec:java && node makeTable.js"
+    "selenium": "mvn package && mvn package exec:java && node makeTable.js"
   },
   "author": "Stefan Krause",
   "license": "ISC",

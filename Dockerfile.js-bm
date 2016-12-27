@@ -129,10 +129,8 @@ RUN set -x \
 # clonning form github
 #==============================
 
-RUN mkdir /src
+RUN mkdir -p /src/js-framework-benchmark
 WORKDIR /src
-
-RUN git clone https://github.com/mishadev/js-framework-benchmark.git /src/js-framework-benchmark
 
 #==================
 # Chrome webdriver
@@ -149,6 +147,7 @@ RUN cd /tmp \
   && chmod 755 /usr/bin/chromedriver
 
 RUN apt-get update -qqy && apt-get -qqy install gdebi
+
 #========================
 # Google Chrome download
 #========================
@@ -164,11 +163,9 @@ RUN cd /tmp \
 #==============================
 # Scripts to run Selenium
 #==============================
+
 ADD ./package.json /src/package.json
 RUN npm install
-
-WORKDIR /src/js-framework-benchmark
-RUN npm run postinstall && npm run build
 
 ADD ./graphical-session/xvfb /etc/init.d/xvfb
 RUN chmod 755 /etc/init.d/xvfb
@@ -182,5 +179,7 @@ RUN chmod 755 /opt/google/chrome/google-chrome
 ADD ./entrypoint.sh /opt/bin/entrypoint.sh
 RUN chmod 755 /opt/bin/entrypoint.sh
 
-
+WORKDIR /src/js-framework-benchmark
 ENTRYPOINT ["/opt/bin/entrypoint.sh"]
+
+CMD ["--help"]

@@ -20,8 +20,8 @@ interface Timingresult {
 function clearLogs(driver: WebDriver): promise.Promise<void> {
     return driver.manage().logs().get(logging.Type.PERFORMANCE).then(entries => {
         if (config.LOG_DEBUG) {
-            let results = entries.forEach(x => 
-            {                
+            let results = entries.forEach(x =>
+            {
                 let e = JSON.parse(x.message).message;
                 console.log(e);
             });
@@ -34,7 +34,7 @@ function readLogs(driver: WebDriver): promise.Promise<Timingresult[]> {
         let click : Timingresult = null;
         let lastPaint : Timingresult = null;
         let mem : Timingresult = null;
-        let results = entries.forEach(x => 
+        let results = entries.forEach(x =>
         {
             let e = JSON.parse(x.message).message;
             if (config.LOG_DEBUG) console.log(e);
@@ -66,9 +66,10 @@ function buildDriver() {
     options = options.setLoggingPrefs(logPref);
     options = options.setPerfLoggingPrefs(<any>{enableNetwork: false, enablePage: false, enableTimeline: false, traceCategories: "browser,devtools.timeline,devtools", bufferUsageReportingInterval: 1000});
 
+    console.log("building browser")
     return new Builder()
         .forBrowser('chrome')
-        .setChromeOptions(options)    
+        .setChromeOptions(options)
         .build();
 }
 
@@ -87,7 +88,7 @@ function runBenchmark(driver: WebDriver, benchmark: Benchmark, framework: string
             if (config.LOG_PROGRESS) console.log("after run ",benchmark.id, benchmark.type, framework);
             if (benchmark.type === BenchmarkType.MEM) {
                 return driver.executeScript("window.gc();");
-            }            
+            }
         })
         .then(() => readLogs(driver))
         .then((results) => {if (config.LOG_PROGRESS) console.log(`result ${framework}_${benchmark.id}`, results); return results});
@@ -96,7 +97,7 @@ function runBenchmark(driver: WebDriver, benchmark: Benchmark, framework: string
 function initBenchmark(driver: WebDriver, benchmark: Benchmark, framework: string) : promise.Promise<any> {
     return benchmark.init(driver)
     .then(() => {
-        if (config.LOG_PROGRESS) console.log("after initialized ",benchmark.id, benchmark.type, framework);                                 
+        if (config.LOG_PROGRESS) console.log("after initialized ",benchmark.id, benchmark.type, framework);
         if (benchmark.type === BenchmarkType.MEM) {
             return driver.executeScript("window.gc();");
         }
@@ -110,7 +111,7 @@ function initBenchmark(driver: WebDriver, benchmark: Benchmark, framework: strin
 interface Result {
     framework: FrameworkData;
     results: number[];
-    benchmark: Benchmark    
+    benchmark: Benchmark
 }
 
 function writeResult(res: Result, dir: string) {
@@ -137,6 +138,10 @@ function writeResult(res: Result, dir: string) {
 function runBench(frameworkNames: string[], benchmarkNames: string[], dir: string): promise.Promise<any> {
     let runFrameworks = frameworks.filter(f => frameworkNames.some(name => f.name.indexOf(name)>-1));
     let runBenchmarks = benchmarks.filter(b => benchmarkNames.some(name => b.id.toLowerCase().indexOf(name)>-1));
+    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++=");
+    console.log(`frameworkNames ${frameworkNames}`);
+    console.log(`benchmarkNames ${benchmarkNames}`);
+    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++=");
     console.log("Frameworks that will be benchmarked", runFrameworks);
     console.log("Benchmarks that will be run", runBenchmarks.map(b => b.id));
 
@@ -152,9 +157,13 @@ function runBench(frameworkNames: string[], benchmarkNames: string[], dir: strin
         let benchmark = data[i][1];
         console.log("benchmarking ", framework, benchmark.id);
         let driver = buildDriver();
+        console.log("+++++++++++++++++++++++++++++++++++++++++++");
         return forProm(0, config.REPEAT_RUN, () => {
             setUseShadowRoot(framework.useShadowRoot);
-            return driver.get(`http://localhost:8080/${framework.uri}/`)
+            console.log("=============================================");
+            console.log(`uri: http://${process.env.JS_BM_WEB_PORT_8080_TCP_ADDR}:${process.env.JS_BM_WEB_PORT_8080_TCP_PORT}/${framework.uri}/`);
+            console.log("=============================================");
+            return driver.get(`http://${process.env.JS_BM_WEB_PORT_8080_TCP_ADDR}:${process.env.JS_BM_WEB_PORT_8080_TCP_PORT}/${framework.uri}/`)
             .then(() => initBenchmark(driver, benchmark, framework.name))
             .then(() => clearLogs(driver))
             .then(() => runBenchmark(driver, benchmark, framework.name))

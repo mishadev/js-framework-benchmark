@@ -1,24 +1,31 @@
 #!/bin/bash
 
+if [[ ${1} == --help ]]; then
+
+  echo "run [command]"
+  set --
+fi
 # allow arguments to be passed to npm
 if [[ ${1:0:1} = '-' ]]; then
   EXTRA_ARGS="$@"
   set --
-elif [[ ${1} == node ]]; then
-  EXTRA_ARGS="${@:2}"
+elif [[ ${1} == run ]]; then
+  COMMAND="${2}"
+  EXTRA_ARGS="$@"
   set --
 fi
 
-git checkout master && git add -A && git reset --hard && git pull
-
 # default behaviour is to launch npm
 if [[ -z ${1} ]]; then
-  echo "Starting tests..." >&2
-  start-graphical-session
+  echo "Starting ${EXTRA_ARGS}..." >&2
+  echo "Starting ${COMMAND}" >&2
 
-  echo "npm run selenium -- ${EXTRA_ARGS}"
+  if [[ ${COMMAND} = selenium ]]; then
+    start-graphical-session
+  fi
+  echo "npm ${EXTRA_ARGS}"
+  npm ${EXTRA_ARGS}
 
-  npm run selenium -- ${EXTRA_ARGS}
 else
   exec "$@"
 fi

@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "Simple Benchmark for Javascript client side rendering",
   "scripts": {
-    "postinstall": "node install.js",
+    "install": "node install.js",
     "build": "node build.js",
-    "start": "http-server -c-1 .",
-    "selenium": "cd webdriver-ts && npm run selenium && npm run results"
+    "web": "http-server -c-1 .",
+    "selenium": "cd webdriver-ts && npm run selenium -- ",
+    "results": "cd webdriver-ts && npm run results -- "
   },
   "keywords": [
     "benchmark",
