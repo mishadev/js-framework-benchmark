@@ -139,7 +139,7 @@ let geomMeans = factors.map(f => {
 	return {value: value.toPrecision(3), styleClass: color(value)}
 });
 
-fs.writeFileSync('./table.html', dots.table({
+fs.writeFileSync('./table/index.html', dots.table({
 	frameworks: frameworks.map(framework => framework.replace('-v', ' v')),
 	cpubenches,
 	membenches,

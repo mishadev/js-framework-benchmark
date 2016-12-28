@@ -3,7 +3,7 @@
 <meta charset="utf-8" />
 <head>
     <title>Table Report</title>
-    <link rel="stylesheet" href="../css/github-markdown.css">
+    <link rel="stylesheet" href="../../css/github-markdown.css">
     <style>
     body {
       overflow:scroll;

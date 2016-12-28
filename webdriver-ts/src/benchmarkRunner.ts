@@ -168,9 +168,9 @@ function runBench(frameworkNames: string[], benchmarkNames: string[], dir: strin
             console.log(`uri: ${HOST_URI}/${framework.uri}/`);
             console.log("=============================================");
             return driver.get(`${HOST_URI}/${framework.uri}/`)
-            .then(() => initBenchmark(driver, benchmark, framework.name))
-            .then(() => clearLogs(driver))
-            .then(() => runBenchmark(driver, benchmark, framework.name))
+              .then(() => initBenchmark(driver, benchmark, framework.name))
+              .then(() => clearLogs(driver))
+              .then(() => runBenchmark(driver, benchmark, framework.name))
         })
         .then(results => reduceBenchmarkResults(benchmark, results))
         .then(results => {  
@@ -195,8 +195,7 @@ let dir = args.check === 'true' ? "results_check" : "results"
 
 console.log("target directory", dir);
 
-if (!fs.existsSync(dir))
-    fs.mkdirSync(dir);
+if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 
 if (args.help) {
     yargs.showHelp();

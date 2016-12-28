@@ -5,9 +5,8 @@
   "scripts": {
     "install": "node install.js",
     "build": "node build.js",
-    "web": "http-server -c-1 .",
-    "selenium": "cd webdriver-ts && npm run selenium -- ",
-    "results": "cd webdriver-ts && npm run results"
+    "host": "http-server -c-1 .",
+    "benchmark": "./benchmark.sh"
   },
   "keywords": [
     "benchmark",

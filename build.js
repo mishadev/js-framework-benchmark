@@ -47,7 +47,7 @@ fs.writeFile('index.html', `
          <div class="panel panel-default">
             <div class="panel-body">
                <ul class="nav nav-pills nav-stacked">
-                  <li><a href="webdriver-ts/table.html"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Table Report</a></li>
+                  <li><a href="webdriver-ts/table"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Table Report</a></li>
                </ul>
             </div>
          </div>
