@@ -7,7 +7,7 @@
     "build": "node build.js",
     "web": "http-server -c-1 .",
     "selenium": "cd webdriver-ts && npm run selenium -- ",
-    "results": "cd webdriver-ts && npm run results -- "
+    "results": "cd webdriver-ts && npm run results"
   },
   "keywords": [
     "benchmark",

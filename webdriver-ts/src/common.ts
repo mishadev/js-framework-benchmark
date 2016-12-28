@@ -1,7 +1,12 @@
 export interface JSONResult {
-    framework: string, benchmark: string, type: string, min: number,
-        max: number, mean: number, geometricMean: number,
-        standardDeviation: number
+    framework: string,
+    benchmark: string,
+    type: string,
+    min: number,
+    max: number,
+    mean: number,
+    geometricMean: number,
+    standardDeviation: number
 }
 
 export let config = {
@@ -40,6 +45,7 @@ export let frameworks = [
     f("react-v15.4.0-redux-v3.6.0"),
     f("riot-v2.6.7"),
     f("simulacra-v1.5.5"),
+    f("svelte-v1.0.1"),
     f("tsers-v1.0.0"),
     f("vanillajs"),
     f("vanillajs-keyed"),

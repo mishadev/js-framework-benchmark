@@ -126,7 +126,7 @@ RUN set -x \
 	&& [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
 #==============================
-# clonning form github
+# create a dir
 #==============================
 
 RUN mkdir -p /src/js-framework-benchmark
@@ -180,6 +180,11 @@ ADD ./entrypoint.sh /opt/bin/entrypoint.sh
 RUN chmod 755 /opt/bin/entrypoint.sh
 
 WORKDIR /src/js-framework-benchmark
+ADD . /src/js-framework-benchmark
+
+RUN npm run install
+RUN npm run build
+
 ENTRYPOINT ["/opt/bin/entrypoint.sh"]
 
-CMD ["--help"]
+CMD ["run web"]

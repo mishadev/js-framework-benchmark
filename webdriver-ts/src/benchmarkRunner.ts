@@ -17,6 +17,10 @@ interface Timingresult {
     mem?: number;
 }
 
+const HOST_URI = process.env.JS_BENCHMARK_HOSTER_PORT_8080_TCP_ADDR ?
+  `http://${process.env.JS_BENCHMARK_HOSTER_PORT_8080_TCP_ADDR}:${process.env.JS_BENCHMARK_HOSTER_PORT_8080_TCP_PORT}` :
+  process.env.HOST_URI;
+
 function clearLogs(driver: WebDriver): promise.Promise<void> {
     return driver.manage().logs().get(logging.Type.PERFORMANCE).then(entries => {
         if (config.LOG_DEBUG) {
@@ -161,9 +165,9 @@ function runBench(frameworkNames: string[], benchmarkNames: string[], dir: strin
         return forProm(0, config.REPEAT_RUN, () => {
             setUseShadowRoot(framework.useShadowRoot);
             console.log("=============================================");
-            console.log(`uri: http://${process.env.JS_BM_WEB_PORT_8080_TCP_ADDR}:${process.env.JS_BM_WEB_PORT_8080_TCP_PORT}/${framework.uri}/`);
+            console.log(`uri: ${HOST_URI}/${framework.uri}/`);
             console.log("=============================================");
-            return driver.get(`http://${process.env.JS_BM_WEB_PORT_8080_TCP_ADDR}:${process.env.JS_BM_WEB_PORT_8080_TCP_PORT}/${framework.uri}/`)
+            return driver.get(`${HOST_URI}/${framework.uri}/`)
             .then(() => initBenchmark(driver, benchmark, framework.name))
             .then(() => clearLogs(driver))
             .then(() => runBenchmark(driver, benchmark, framework.name))

@@ -6,42 +6,19 @@ This work is derived from a benchmark that Richard Ayotte published on https://g
 
 Thanks to Baptiste Augrain for making the benchmarks more sophisticated and adding frameworks.
 
-## Important News
-
-Chrome 54 on OSX has a bug that causes webdriver to hang or crash on non english systems. Please run the following command prior to executing the webdriver-ts testdriver:```
-export LANG="en_US.UTF-8"```
-
 ## Prerequsites
 
-Have *node.js (>=6.0)* installed. If you want to do yourself a favour use nvm for that and install yarn. The benchmark has been tested with node 6.0.
-You will also need *java* (>=6, e.g. openjdk-8-jre on ubuntu) for the google closure compiler, currently used in kivi.
+Install docker [instruction](https://docs.docker.com/engine/installation/).
 
-## Building
+## Building and Host
 
-* To build the benchmarks for all frameworks:
+* To build and host all avalable frameworks and host them on localhost:
 
-`npm install`
-or 
-`yarn`
-
-`npm run build`
-
-The latter calls npm build-prod in each subproject.
-
-* To build a single benchmark for a framework, e.g. aurelia
-
-`cd aurelia`
-
-`npm install`
-or 
-`yarn`
-
-`npm run build-prod`
+`run.host.docker.sh`
 
 ## Running in the browser
 
-Execute `npm start` in the main directory to start a http-server for the web pages.
-Open [http://localhost:8080](http://localhost:8080/) and choose the directory for the framework you want to test.
+Open [http://localhost:80](http://localhost:80/) and choose the directory for the framework you want to test.
 Most actions will try to measure the duration and print it to the console. Depending on the framework this might be more or less precise. To measure the exact numbers one needs to use e.g. the timeline from the chrome dev tools.
 
 ## About the benchmarks
@@ -64,23 +41,14 @@ The results of this benchmark is outlined on by blog ([round 1](http://www.stefa
 
 ## Execute the benchmarks with webdriver
 
-The former java test runner has been replaced with a typescript based test runner. The new test runner contains no timer based waits and is thus much faster.
+`run.tests.docker.sh`
 
-`npm start`
+* To run specific frameworks [ knockout react vue ] you can call it like:
 
-which starts a web browser
+`run.tests.docker.sh --framework knockout react vue`
+or
+`run.my.tests.docker.sh`
 
-`npm run selenium`
+Open [http://localhost:80/webdriver-ts/table.html](http://localhost:80/webdriver-ts/table.html) for the results
 
-which runs the seleniums tests
-
-Open [http://localhost:8080/webdriver-ts/table.html](http://localhost:8080/webdriver-ts/table.html) for the results
-
-A test showing the durations on my machine can be seen [here](https://rawgit.com/krausest/js-framework-benchmark/master/webdriver-ts/table.html)
-
-Single tests can be repeated easily. Just `cd webdriver-ts` and run the benchmarks and frameworks you want, e.g:
-`npm run selenium -- --framework angular bob --benchmark 01_ 02_`
-runs the test for all frameworks that contain either angular or bob, which means all angular versions and bobril and all benchmarks whose id contain 01_ or 02_
-which means the create rows and replace all rows benchmarks.
-After that you'll want to update the result table with
-`npm run results`
+runs the test for all frameworks that contain either angular or bob, which means all angular versions and bobril. After that you'll want to update the result table with
